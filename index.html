@@ -52,6 +52,7 @@
             font-size: 2rem;
             font-weight: 700;
             background: linear-gradient(135deg, #818cf8, #c084fc);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -212,7 +213,7 @@
 </div>
 
 <script>
-    const API_BASE = "https://onepick-downloader-web-g.onrender.com";
+    const API_BASE = "https://onepick-downloder-web-g.onrender.com";
 
     async function fetchMedia() {
         const url = document.getElementById('urlInput').value.trim();
@@ -268,7 +269,7 @@
             }
         } catch (err) {
             loader.style.display = 'none';
-            alert('Failed to connect to backend server. Render instance may take 30s to wake up.');
+            alert('Failed to connect to backend server. Render instance may take 30s to wake up..');
         }
     }
 </script>
