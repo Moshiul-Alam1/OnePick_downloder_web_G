@@ -213,65 +213,58 @@
 </div>
 
 <script>
-    const API_BASE = "https://onepick-downloder-web-g.onrender.com";
+    const API_BASE = "https://onepick-downloader-web-g.onrender.com";  // use the render.com backend URL 
 
-    async function fetchMedia() {
-        const url = document.getElementById('urlInput').value.trim();
-        if(!url) return alert('Please enter a valid URL!');
+async function fetchMedia() {
+    const urlInput = document.getElementById('urlInput').value.trim();
+    if(!urlInput) return alert('Please paste a video link!');
 
-        const loader = document.getElementById('loader');
-        const resultCard = document.getElementById('resultCard');
+    const loader = document.getElementById('loader');
+    const resultCard = document.getElementById('resultCard');
 
-        loader.style.display = 'block';
-        resultCard.style.display = 'none';
+    if (loader) loader.style.display = 'block';
+    if (resultCard) resultCard.style.display = 'none';
 
-        try {
-            const response = await fetch(`${API_BASE}/api/fetch`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url })
+    try {
+        const response = await fetch(`${API_BASE}/api/fetch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: urlInput })
+        });
+
+        const data = await response.json();
+        if (loader) loader.style.display = 'none';
+
+        if(response.ok && data.success) {
+            console.log("Fetched successfully:", data);
+            
+            // UI elements update
+            document.getElementById('thumb').src = data.thumbnail;
+            document.getElementById('title').innerText = data.title;
+            document.getElementById('meta').innerText = `${data.site} • ${data.uploader}`;
+
+            const formatList = document.getElementById('formatList');
+            formatList.innerHTML = '';
+
+            data.formats.slice(0, 10).forEach(f => {
+                const a = document.createElement('a');
+                a.className = 'format-btn';
+                a.href = f.url;
+                a.target = '_blank';
+                a.setAttribute('download', '');
+                a.innerHTML = `<span><strong>${f.resolution}</strong> (${f.ext.toUpperCase()})</span> <span>⬇️</span>`;
+                formatList.appendChild(a);
             });
 
-            const data = await response.json();
-            loader.style.display = 'none';
-
-            if(response.ok && data.success) {
-                document.getElementById('thumb').src = data.thumbnail || 'https://via.placeholder.com/180x100?text=No+Thumbnail';
-                document.getElementById('title').innerText = data.title;
-                document.getElementById('meta').innerText = `${data.site} • ${data.uploader}`;
-
-                const formatList = document.getElementById('formatList');
-                formatList.innerHTML = '';
-
-                if(data.formats && data.formats.length > 0) {
-                    // Unique link filtering
-                    const seen = new Set();
-                    data.formats.forEach(f => {
-                        const key = `${f.resolution}-${f.ext}`;
-                        if(!seen.has(key) && f.url) {
-                            seen.add(key);
-                            const a = document.createElement('a');
-                            a.className = 'format-btn';
-                            a.href = f.url;
-                            a.target = '_blank';
-                            a.setAttribute('download', '');
-                            a.innerHTML = `<span><strong>${f.resolution}</strong> (${f.ext.toUpperCase()})</span> <span>⬇️</span>`;
-                            formatList.appendChild(a);
-                        }
-                    });
-                } else {
-                    formatList.innerHTML = '<p style="color:var(--text-muted)">No direct streams found.</p>';
-                }
-
-                resultCard.style.display = 'block';
-            } else {
-                alert('Error: ' + (data.detail || 'Could not process media link.'));
-            }
-        } catch (err) {
-            loader.style.display = 'none';
-            alert('Failed to connect to backend server. Render instance may take 30s to wake up..');
+            if (resultCard) resultCard.style.display = 'block';
+        } else {
+            alert('Server Response: ' + (data.detail || 'Failed to fetch media'));
         }
+    } catch (err) {
+        if (loader) loader.style.display = 'none';
+        alert('Network Connection Error! Make sure Render backend is live.');
     }
+}
 </script>
 
 </body>
