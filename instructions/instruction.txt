@@ -1,0 +1,33 @@
+১.১. তোমার পিসিতে একটি ফোল্ডার খোলো এবং ২টি ফাইল তৈরি করো:
+ফাইল ১: requirements.txt
+
+Plaintext
+fastapi
+uvicorn
+yt-dlp
+
+ফাইল ২: main.py
+
+
+১.২. GitHub & Render.com সেটআপ:     
+GitHub-এ একটি Public Repository খুলে এই ২টি ফাইল আপলোড করো।     
+
+			---> GitHub name : Moshiul-Alam1     Repository Name : OnePick_downloder_web_G
+				Repo url (origin) : https://github.com/Moshiul-Alam1/OnePick_downloder_web_G.git
+
+
+Render.com-এ গিয়ে Sign Up with GitHub সিলেক্ট করো।  ---->  GitHub name : Moshiul-Alam1 
+
+New + বাটনে ক্লিক করে Web Service পছন্দ করো।
+
+তোমার GitHub Repository-টি কানেক্ট করো।   ----->   Repo url (origin) : https://github.com/Moshiul-Alam1/OnePick_downloder_web_G.git
+
+Build Command: pip install -r requirements.txt
+
+Start Command: uvicorn main:app --host 0.0.0.0 --port 10000
+
+Instance Type: Free সিলেক্ট করে Create Web Service দাও।
+
+৩-৪ মিনিটের মধ্যে তোমার একটি ব্যাকএন্ড URL তৈরি হয়ে যাবে (যেমন: [https://onepick-api.onrender.com](https://onepick-api.onrender.com))। এটি কপি করে রাখো!
+
+my url :  Available at your primary URL https://onepick-downloder-web-g.onrender.com
