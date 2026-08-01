@@ -31,3 +31,50 @@ Instance Type: Free সিলেক্ট করে Create Web Service দাও
 ৩-৪ মিনিটের মধ্যে তোমার একটি ব্যাকএন্ড URL তৈরি হয়ে যাবে (যেমন: [https://onepick-api.onrender.com](https://onepick-api.onrender.com))। এটি কপি করে রাখো!
 
 my url :  Available at your primary URL https://onepick-downloder-web-g.onrender.com
+
+
+
+Step 3: Vercel-এ ওয়েবসাইট লাইভ করা ($0 Cost)
+Vercel.com-এ গিয়ে Sign Up with GitHub করো।
+
+Add New Project-এ ক্লিক করে তোমার HTML ফ্রন্টএন্ড কোড সহ GitHub Repository-টি সিলেক্ট করে Deploy চাপো।
+
+১ মিনিটের মধ্যে তোমার সাইট সম্পূর্ণ লাইভ হয়ে যাবে এবং একটি ফ্রি HTTPS ডোমেইন লিঙ্ক পাওয়া যাবে!
+
+
+if you can't see you website live then : 
+সহজ সমাধান: GitHub-এ ফাইলগুলোকে ২টি আলাদা প্রজেক্ট/ফোল্ডারে ভাগ করা
+যেহেতু তোমার একই GitHub Repository-তে main.py এবং index.html দুটোই আছে, Vercel কনফিউজ হয়ে Python API টাকে প্রাধান্য দিচ্ছে।
+
+ধাপ ১: Vercel-কে শুধু index.html ফাইলটি সার্ভ করতে বলা
+তোমার GitHub Repository-তে ঢোকো।
+
+সেখানে একটি নতুন ফাইল তৈরি করো, যার নাম দাও vercel.json।
+
+vercel.json ফাইলের ভেতর নিচের কোডটুকু পেস্ট করে Save (Commit) করে দাও:
+
+JSON
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+ধাপ ২: Vercel-এ Redeploy করা
+vercel.json ফাইলটি কমিট করার পর Vercel অটোমেটিক নতুন বিল্ড শুরু করবে।
+
+১ মিনিট পর তোমার Vercel লিংকে (one-pick-downloader-web-g.vercel.app) রিফ্রেশ দাও।
+
+ব্যাস! এখন সরাসরি তোমার ওয়েবসাইটের সুন্দর UI চলে আসবে!
+
+⚠️ একটি ছোট কিন্তু গুরুত্বপূর্ণ বিষয় (যাতে ওয়েবসাইটে এরর না আসে):
+তোমার index.html ফাইলের ৮৪ নম্বর লাইনে যেখানে লেখা আছে:
+
+JavaScript
+const API_BASE = "https://onepick-api.onrender.com";
+এখানে Render.com তোমাকে যে কাস্টম API URL দিয়েছে (যেমন: [https://xxxx.onrender.com](https://xxxx.onrender.com)), সেই সঠিক URL-টি বসানো আছে কিনা তা নিশ্চিত করে নাও।
+
+vercel.json যোগ করার পর লিঙ্কটি চেক করে জানাও ওয়েবসাইট দেখা যাচ্ছে কিনা!
