@@ -1,148 +1,277 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OnePick Web - Free 1080p Video & Audio Downloader</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>OnePick Downloader - Universal Web Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f0f12;
+            --card-bg: #18181c;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #27272a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 6px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: #09090b;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .search-box button {
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover {
+            background: var(--accent-hover);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
+        .result-card {
+            display: none;
+            background: #09090b;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .media-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .media-info img {
+            width: 180px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .media-details h3 {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .media-details p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .download-options {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .download-options h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
+
+        .format-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .format-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .format-btn:hover {
+            border-color: var(--accent-color);
+            background: #1e1e24;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-white font-sans min-h-screen flex flex-col">
+<body>
 
-    <!-- Header / Navbar -->
-    <header class="border-b border-slate-800 p-4 flex justify-between items-center max-w-6xl mx-auto w-full">
-        <h1 class="text-2xl font-bold text-indigo-500">OnePick<span class="text-white">Web</span></h1>
-        <!-- Desktop App Marketing Button -->
-        <a href="YOUR_GITHUB_EXE_RELEASE_URL" target="_blank" class="bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 px-4 py-2 rounded-lg font-semibold text-sm transition shadow-lg">
-            💻 Get Desktop App (4K & Playlist Support)
-        </a>
-    </header>
+<div class="container">
+    <div class="header">
+        <h1>OnePick Downloader</h1>
+        <p>Download video and audio from 1000+ supported platforms</p>
+    </div>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-4xl w-full mx-auto p-4 my-8">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl md:text-4xl font-extrabold mb-3">অনলাইন ১০৮০p ভিডিও ও অডিও ডাউনলোডার</h2>
-            <p class="text-slate-400">১০০% ফ্রিতে ১০৮০p ভিডিও, স্পেসিফিক অডিও ট্র্যাক, সাবটাইটেল ও থাম্বনেল ডাউনলোড করুন</p>
-        </div>
+    <div class="search-box">
+        <input type="text" id="urlInput" placeholder="Paste link here (YouTube, Facebook, Instagram, TikTok, etc.)...">
+        <button onclick="fetchMedia()">Fetch</button>
+    </div>
 
-        <!-- Input Box -->
-        <div class="flex gap-2 mb-8">
-            <input type="text" id="videoUrl" placeholder="ভিডিও বা মিডিয়া লিংক পেস্ট করুন..." class="flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white">
-            <button onclick="fetchMedia()" id="btnText" class="bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-xl font-bold transition">Download</button>
-        </div>
+    <div class="loader" id="loader">
+        <p>Fetching content details, please wait...</p>
+    </div>
 
-        <!-- Loader -->
-        <div id="loader" class="hidden text-center my-6 text-indigo-400 font-semibold animate-pulse">
-            মিডিয়া প্রসেস করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...
-        </div>
-
-        <!-- Results Display -->
-        <div id="resultCard" class="hidden bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-2xl">
-            <div class="flex flex-col md:flex-row gap-6 mb-6">
-                <img id="thumb" class="w-full md:w-56 h-36 object-cover rounded-xl" src="" alt="Thumbnail">
-                <div>
-                    <h3 id="videoTitle" class="text-xl font-bold mb-3"></h3>
-                    
-                    <!-- 4K Suggestion Banner -->
-                    <div class="text-xs text-amber-300 bg-amber-950/60 border border-amber-700/60 p-3 rounded-xl">
-                        🚀 <strong>৪কে (4K/Ultrawide) ভিডিও</strong> অথবা সম্পূর্ণ প্লেলিস্ট একসঙ্গে সুপারফাস্ট ডাউনলোড করতে আমাদের <a href="YOUR_GITHUB_EXE_RELEASE_URL" target="_blank" class="underline font-bold text-amber-200">Windows Desktop App</a> টি ব্যবহার করুন।
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Video Options (Up to 1080p) -->
-                <div>
-                    <h4 class="font-bold text-indigo-400 mb-3 text-lg flex items-center gap-2">📹 Video Downloads (1080p Included)</h4>
-                    <div id="videoList" class="space-y-2"></div>
-                </div>
-
-                <!-- Separate Audio Tracks -->
-                <div>
-                    <h4 class="font-bold text-purple-400 mb-3 text-lg flex items-center gap-2">🎵 Specific Audio Tracks (Language-wise)</h4>
-                    <div id="audioList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
-                </div>
+    <div class="result-card" id="resultCard">
+        <div class="media-info">
+            <img id="thumb" src="" alt="Thumbnail">
+            <div class="media-details">
+                <h3 id="title">Media Title</h3>
+                <p id="meta">Source | Uploader</p>
             </div>
         </div>
 
-        <!-- LocalStorage History -->
-        <div class="mt-12">
-            <h3 class="text-xl font-bold mb-4 text-slate-300">📜 সাম্প্রতিক ডাউনলোডের ইতিহাস (History)</h3>
-            <div id="historyList" class="space-y-2"></div>
+        <div class="download-options">
+            <h4>Available Formats</h4>
+            <div class="format-list" id="formatList"></div>
         </div>
-    </main>
+    </div>
+</div>
 
-    <script>
-        const API_BASE = "https://onepick-downloder-web-g.onrender.com"; // Render.com Backend URL
+<script>
+    const API_BASE = "https://onepick-downloader-web-g.onrender.com";
 
-        async function fetchMedia() {
-            const url = document.getElementById('videoUrl').value;
-            if(!url) return alert('দয়া করে একটি সঠিক লিঙ্ক দিন!');
+    async function fetchMedia() {
+        const url = document.getElementById('urlInput').value.trim();
+        if(!url) return alert('Please enter a valid URL!');
 
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('resultCard').classList.add('hidden');
+        const loader = document.getElementById('loader');
+        const resultCard = document.getElementById('resultCard');
 
-            try {
-                const res = await fetch(`${API_BASE}/api/extract?url=${encodeURIComponent(url)}`);
-                const data = await res.json();
-                
-                document.getElementById('loader').classList.add('hidden');
-                if(data.detail) return alert('ভিডিও তথ্য পাওয়া যায়নি!');
+        loader.style.display = 'block';
+        resultCard.style.display = 'none';
 
-                // Set Data
-                document.getElementById('thumb').src = data.thumbnail;
-                document.getElementById('videoTitle').innerText = data.title;
+        try {
+            const response = await fetch(`${API_BASE}/api/fetch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            });
 
-                // Populate Videos (1080p, 720p, etc.)
-                const videoDiv = document.getElementById('videoList');
-                videoDiv.innerHTML = data.videos.map(v => `
-                    <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-lg text-sm">
-                        <span class="font-medium">MP4 (${v.resolution})</span>
-                        <a href="${v.url}" target="_blank" download class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded text-xs font-semibold transition">Download</a>
-                    </div>
-                `).join('') || '<p class="text-xs text-slate-500">কোনো ভিডিও স্ট্রিম পাওয়া যায়নি</p>';
+            const data = await response.json();
+            loader.style.display = 'none';
 
-                // Populate Audio Tracks (Specific Language / Audio-Only)
-                const audioDiv = document.getElementById('audioList');
-                audioDiv.innerHTML = data.audio_tracks.map(a => `
-                    <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-lg text-sm">
-                        <span>${a.language} <span class="text-xs text-slate-400">(${a.bitrate})</span></span>
-                        <a href="${a.url}" target="_blank" download class="bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded text-xs font-semibold transition">Download Track</a>
-                    </div>
-                `).join('') || '<p class="text-xs text-slate-500">কোনো আলাদা অডিও ট্র্যাক পাওয়া যায়নি</p>';
+            if(response.ok && data.success) {
+                document.getElementById('thumb').src = data.thumbnail || 'https://via.placeholder.com/180x100?text=No+Thumbnail';
+                document.getElementById('title').innerText = data.title;
+                document.getElementById('meta').innerText = `${data.site} • ${data.uploader}`;
 
-                document.getElementById('resultCard').classList.remove('hidden');
+                const formatList = document.getElementById('formatList');
+                formatList.innerHTML = '';
 
-                // Save to LocalStorage History
-                saveHistory(data.title, url);
+                if(data.formats && data.formats.length > 0) {
+                    // Unique link filtering
+                    const seen = new Set();
+                    data.formats.forEach(f => {
+                        const key = `${f.resolution}-${f.ext}`;
+                        if(!seen.has(key) && f.url) {
+                            seen.add(key);
+                            const a = document.createElement('a');
+                            a.className = 'format-btn';
+                            a.href = f.url;
+                            a.target = '_blank';
+                            a.setAttribute('download', '');
+                            a.innerHTML = `<span><strong>${f.resolution}</strong> (${f.ext.toUpperCase()})</span> <span>⬇️</span>`;
+                            formatList.appendChild(a);
+                        }
+                    });
+                } else {
+                    formatList.innerHTML = '<p style="color:var(--text-muted)">No direct streams found.</p>';
+                }
 
-            } catch (err) {
-                document.getElementById('loader').classList.add('hidden');
-                alert('ত্রুটি ঘটেছে! আবার চেষ্টা করুন।');
+                resultCard.style.display = 'block';
+            } else {
+                alert('Error: ' + (data.detail || 'Could not process media link.'));
             }
+        } catch (err) {
+            loader.style.display = 'none';
+            alert('Failed to connect to backend server. Render instance may take 30s to wake up.');
         }
+    }
+</script>
 
-        // LocalStorage History Management
-        function saveHistory(title, url) {
-            let history = JSON.parse(localStorage.getItem('onepick_history') || '[]');
-            history.unshift({ title, url, date: new Date().toLocaleDateString() });
-            history = history.slice(0, 5);
-            localStorage.setItem('onepick_history', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            let history = JSON.parse(localStorage.getItem('onepick_history') || '[]');
-            const historyDiv = document.getElementById('historyList');
-            historyDiv.innerHTML = history.map(h => `
-                <div class="bg-slate-800 p-3 rounded-xl flex justify-between text-sm text-slate-400">
-                    <span class="truncate w-3/4">${h.title}</span>
-                    <span class="text-xs text-slate-500">${h.date}</span>
-                </div>
-            `).join('') || '<p class="text-xs text-slate-500">কোনো ডাউনলোডের ইতিহাস নেই</p>';
-        }
-
-        renderHistory();
-    </script>
 </body>
 </html>

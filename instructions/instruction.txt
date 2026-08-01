@@ -43,38 +43,34 @@ Add New Project-এ ক্লিক করে তোমার HTML ফ্রন�
 
 
 if you can't see you website live then : 
-সহজ সমাধান: GitHub-এ ফাইলগুলোকে ২টি আলাদা প্রজেক্ট/ফোল্ডারে ভাগ করা
-যেহেতু তোমার একই GitHub Repository-তে main.py এবং index.html দুটোই আছে, Vercel কনফিউজ হয়ে Python API টাকে প্রাধান্য দিচ্ছে।
+১ মিনিটে সমস্যার সমাধান:
+সবচেয়ে সহজ এবং ১০০% কার্যকর সমাধান হলো Vercel-কে স্পষ্টভাবে বলে দেওয়া যে এটি একটি স্ট্যাটিক (HTML/CSS/JS) ওয়েবসাইট।
 
-ধাপ ১: Vercel-কে শুধু index.html ফাইলটি সার্ভ করতে বলা
-তোমার GitHub Repository-তে ঢোকো।
-
-সেখানে একটি নতুন ফাইল তৈরি করো, যার নাম দাও vercel.json।
-
-vercel.json ফাইলের ভেতর নিচের কোডটুকু পেস্ট করে Save (Commit) করে দাও:
+ধাপ ১: vercel.json ফাইলটি আপডেট করো
+তোমার GitHub-এর vercel.json ফাইলটি খুলে পুরো কোডটি বদলে নিচের কোডটি দিয়ে আপডেট (Commit) করে দাও:
 
 JSON
 {
-  "cleanUrls": true,
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
-ধাপ ২: Vercel-এ Redeploy করা
-vercel.json ফাইলটি কমিট করার পর Vercel অটোমেটিক নতুন বিল্ড শুরু করবে।
+এটি কী করবে? "use": "@vercel/static" লাইনটি Vercel-কে বাধ্য করবে Python না চালিয়ে সরাসরি তোমার index.html ওয়েবসাইটটি ব্রাউজারে ডিসপ্লে করতে।
 
-১ মিনিট পর তোমার Vercel লিংকে (one-pick-downloader-web-g.vercel.app) রিফ্রেশ দাও।
-
-ব্যাস! এখন সরাসরি তোমার ওয়েবসাইটের সুন্দর UI চলে আসবে!
-
-⚠️ একটি ছোট কিন্তু গুরুত্বপূর্ণ বিষয় (যাতে ওয়েবসাইটে এরর না আসে):
-তোমার index.html ফাইলের ৮৪ নম্বর লাইনে যেখানে লেখা আছে:
+ধাপ ২: index.html ফাইলে API URL চেক করা
+তোমার index.html ফাইলের ৮৪ নম্বর লাইনে API লিঙ্কটি নিচের মতো সঠিক করা আছে কিনা নিশ্চিত হয়ে নাও:
 
 JavaScript
-const API_BASE = "https://onepick-api.onrender.com";
-এখানে Render.com তোমাকে যে কাস্টম API URL দিয়েছে (যেমন: [https://xxxx.onrender.com](https://xxxx.onrender.com)), সেই সঠিক URL-টি বসানো আছে কিনা তা নিশ্চিত করে নাও।
-
-vercel.json যোগ করার পর লিঙ্কটি চেক করে জানাও ওয়েবসাইট দেখা যাচ্ছে কিনা!
+const API_BASE = "https://onepick-downloader-web-g.onrender.com";   ...> (render.com theke paoya URL )
+ধাপ ৩: Vercel-এ Redeploy হওয়া চেক করা
+vercel.json ফাইলটি আপডেট করার পর ১ মিনিট অপেক্ষা করো। Vercel অটোমেটিক নতুন বিল্ড সম্পন্ন করবে। এরপর ব্রাউজারে রিফ্রেশ দিলে তোমার সুন্দর ওয়েবসাইট ইন্টারফেসটি চলে আসবে!
