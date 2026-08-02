@@ -213,11 +213,11 @@
 </div>
 
 <script>
-    const API_BASE = "https://onepick-downloder-web-g.onrender.com";  // use the render.com backend URL 
+   const API_BASE = "https://onepick-downloder-web-g.onrender.com";  // render.com theke paoya URL
 
 async function fetchMedia() {
     const urlInput = document.getElementById('urlInput').value.trim();
-    if(!urlInput) return alert('Please paste a video link!');
+    if(!urlInput) return alert('Please enter a valid video link!');
 
     const loader = document.getElementById('loader');
     const resultCard = document.getElementById('resultCard');
@@ -226,43 +226,56 @@ async function fetchMedia() {
     if (resultCard) resultCard.style.display = 'none';
 
     try {
-        const response = await fetch(`${API_BASE}/api/fetch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: urlInput })
+        // GET Request to /api/extract (Exact endpoint matching Swagger)
+        const fetchUrl = `${API_BASE}/api/extract?url=${encodeURIComponent(urlInput)}`;
+        
+        const response = await fetch(fetchUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
 
         const data = await response.json();
         if (loader) loader.style.display = 'none';
 
-        if(response.ok && data.success) {
-            console.log("Fetched successfully:", data);
-            
-            // UI elements update
-            document.getElementById('thumb').src = data.thumbnail;
-            document.getElementById('title').innerText = data.title;
-            document.getElementById('meta').innerText = `${data.site} • ${data.uploader}`;
+        if (response.ok) {
+            console.log("Fetched Data:", data);
+
+            // UI Elements Binding
+            if(document.getElementById('thumb')) document.getElementById('thumb').src = data.thumbnail || '';
+            if(document.getElementById('title')) document.getElementById('title').innerText = data.title || 'Media File';
 
             const formatList = document.getElementById('formatList');
-            formatList.innerHTML = '';
+            if(formatList) {
+                formatList.innerHTML = '';
 
-            data.formats.slice(0, 10).forEach(f => {
-                const a = document.createElement('a');
-                a.className = 'format-btn';
-                a.href = f.url;
-                a.target = '_blank';
-                a.setAttribute('download', '');
-                a.innerHTML = `<span><strong>${f.resolution}</strong> (${f.ext.toUpperCase()})</span> <span>⬇️</span>`;
-                formatList.appendChild(a);
-            });
+                // Facebook/Other Videos format mapping from response
+                const videoList = data.videos || [];
+                
+                if (videoList.length === 0 && data.url) {
+                    videoList.push({ resolution: 'Download Video', ext: 'mp4', url: data.url });
+                }
+
+                videoList.forEach(f => {
+                    const a = document.createElement('a');
+                    a.className = 'format-btn';
+                    a.href = f.url;
+                    a.target = '_blank';
+                    a.setAttribute('download', '');
+                    a.innerHTML = `<span><strong>${f.resolution || 'Download'}</strong> (${(f.ext || 'mp4').toUpperCase()})</span> <span>⬇️</span>`;
+                    formatList.appendChild(a);
+                });
+            }
 
             if (resultCard) resultCard.style.display = 'block';
         } else {
-            alert('Server Response: ' + (data.detail || 'Failed to fetch media'));
+            alert('Server Error: ' + (data.detail || 'Could not extract video'));
         }
     } catch (err) {
         if (loader) loader.style.display = 'none';
-        alert('Network Connection Error! Make sure Render backend is live.');
+        console.error(err);
+        alert('Network Connection Error! Make sure server is responding.');
     }
 }
 </script>
