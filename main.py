@@ -22,8 +22,6 @@ class VideoRequest(BaseModel):
 # Cookies configuration using Base64 Decoding
 COOKIES_PATH = "/tmp/yt_cookies.txt"
 b64_cookies = os.getenv("YOUTUBE_COOKIES_BASE64", "").strip()
-
-# Base64 না থাকলে সাধারণ Plain Text Cookies fallback চেক করবে
 plain_cookies = os.getenv("YOUTUBE_COOKIES", "").strip()
 
 if b64_cookies:
@@ -45,29 +43,27 @@ def home():
     }
 
 def extract_all_video_info(video_url: str):
+    # Optimized ydl_opts for universal format support without throwing missing-format exceptions
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
         'skip_download': True,
         'nocheckcertificate': True,
-        'writesubtitles': True,
-        'writeautomaticsub': True,
-        'subtitleslangs': ['all'],
+        'ignoreerrors': True,              # ছোটখাটো ফরম্যাট মিসিং এরর বাইপাস করবে
+        'format': 'best',                  # ডিফল্ট সেফ ফরম্যাট এক্সট্র্যাকশন
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         },
-        # Client Player Strategy: android/web_creator ব্যবহার করলে ইউটিউব ব্লক এড়ানো যায়
         'extractor_args': {
             'youtube': {
-                'player_client': ['web', 'android', 'ios'],
+                'player_client': ['android', 'ios', 'web'],
                 'player_skip': ['configs', 'webpage']
             }
         }
     }
 
-    # চেক করা হচ্ছে ফাইলটি তৈরি হয়েছে কি না এবং এর সাইজ ১০ বাইটের বেশি কি না
     if os.path.exists(COOKIES_PATH) and os.path.getsize(COOKIES_PATH) > 10:
         ydl_opts['cookiefile'] = COOKIES_PATH
 
@@ -76,7 +72,7 @@ def extract_all_video_info(video_url: str):
             raw_info = ydl.extract_info(video_url, download=False)
             
             if not raw_info:
-                raise Exception("No metadata found.")
+                raise Exception("No metadata could be extracted from this URL.")
 
             sanitized_data = ydl.sanitize_info(raw_info)
 
