@@ -1,13 +1,13 @@
 import os
+import base64
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 import yt_dlp
 
-app = FastAPI(title="OnePick Universal Raw Metadata Engine")
+app = FastAPI(title="OnePick Universal Data Extraction Engine")
 
-# CORS Policy configuration so front-end can access the API smoothly
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,19 +19,29 @@ app.add_middleware(
 class VideoRequest(BaseModel):
     url: str
 
-# Cookies file path configuration from Render Environment Variable
+# Cookies configuration using Base64 Decoding
 COOKIES_PATH = "/tmp/yt_cookies.txt"
-yt_cookies_env = os.getenv("YOUTUBE_COOKIES", "").strip()
+b64_cookies = os.getenv("YOUTUBE_COOKIES_BASE64", "").strip()
 
-if yt_cookies_env:
+# Base64 না থাকলে সাধারণ Plain Text Cookies fallback চেক করবে
+plain_cookies = os.getenv("YOUTUBE_COOKIES", "").strip()
+
+if b64_cookies:
+    try:
+        decoded_bytes = base64.b64decode(b64_cookies)
+        with open(COOKIES_PATH, "wb") as f:
+            f.write(decoded_bytes)
+    except Exception as e:
+        print(f"Base64 Cookie Decoding Error: {e}")
+elif plain_cookies:
     with open(COOKIES_PATH, "w", encoding="utf-8") as f:
-        f.write(yt_cookies_env)
+        f.write(plain_cookies)
 
 @app.get("/")
 def home():
     return {
         "status": "online", 
-        "message": "OnePick Complete Raw Data Extraction Engine Active!"
+        "message": "OnePick Universal Downloader Engine Active!"
     }
 
 def extract_all_video_info(video_url: str):
@@ -42,32 +52,32 @@ def extract_all_video_info(video_url: str):
         'nocheckcertificate': True,
         'writesubtitles': True,
         'writeautomaticsub': True,
-        'subtitleslangs': ['all'],  # সমস্ত সাবটাইটেল ডাটা সংগ্রহ করবে
-        'getcomments': False,      # ফেচিং ফাস্ট রাখতে কমেন্ট অফ রাখা হয়েছে (প্রয়োজনে True করতে পারো)
+        'subtitleslangs': ['all'],
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
             'Accept-Language': 'en-US,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         },
+        # Client Player Strategy: android/web_creator ব্যবহার করলে ইউটিউব ব্লক এড়ানো যায়
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'ios', 'mweb', 'web']
+                'player_client': ['web', 'android', 'ios'],
+                'player_skip': ['configs', 'webpage']
             }
         }
     }
 
-    # কুকি ফাইল থাকলে তা স্বয়ংক্রিয়ভাবে যুক্ত করে নিবে
-    if os.path.exists(COOKIES_PATH) and os.path.getsize(COOKIES_PATH) > 0:
+    # চেক করা হচ্ছে ফাইলটি তৈরি হয়েছে কি না এবং এর সাইজ ১০ বাইটের বেশি কি না
+    if os.path.exists(COOKIES_PATH) and os.path.getsize(COOKIES_PATH) > 10:
         ydl_opts['cookiefile'] = COOKIES_PATH
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # extract_info সরাসরি yt-dlp এর সম্পূর্ণ ডিকশনারি ডাটা ফেচ করে
             raw_info = ydl.extract_info(video_url, download=False)
             
             if not raw_info:
-                raise Exception("No metadata could be extracted from this URL.")
+                raise Exception("No metadata found.")
 
-            # sanitize_info নিশ্চিত করে যে সব অবজেক্ট জেসন পার্স করার উপযোগী
             sanitized_data = ydl.sanitize_info(raw_info)
 
             return {
@@ -81,13 +91,11 @@ def extract_all_video_info(video_url: str):
             detail={"success": False, "error": f"Engine Error: {str(e)}"}
         )
 
-# GET Request Endpoints
 @app.get("/api/extract")
 @app.get("/api/fetch")
 def extract_get(url: str = Query(..., description="Target Media URL")):
     return extract_all_video_info(url.strip())
 
-# POST Request Endpoints
 @app.post("/fetch")
 @app.post("/api/fetch")
 @app.post("/api/extract")
